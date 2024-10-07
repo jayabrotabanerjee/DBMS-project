@@ -1,7 +1,6 @@
--- Use the RealEstateDB database
+
 USE RealEstateDB;
 
--- Create the Agents table
 CREATE TABLE IF NOT EXISTS Agents (
     agent_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -9,7 +8,6 @@ CREATE TABLE IF NOT EXISTS Agents (
     email VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Create the Properties table
 CREATE TABLE IF NOT EXISTS Properties (
     property_id INT AUTO_INCREMENT PRIMARY KEY,
     agent_id INT,
@@ -20,7 +18,6 @@ CREATE TABLE IF NOT EXISTS Properties (
     FOREIGN KEY (agent_id) REFERENCES Agents(agent_id) ON DELETE CASCADE
 );
 
--- Create the Transactions table
 CREATE TABLE IF NOT EXISTS Transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     property_id INT,
