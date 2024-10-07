@@ -1,4 +1,3 @@
-
 USE RealEstateDB;
 
 CREATE TABLE IF NOT EXISTS Agents (
