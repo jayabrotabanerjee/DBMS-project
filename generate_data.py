@@ -16,10 +16,10 @@ db.commit()
 #create properties
 for _ in range(50,100):
     cursor.execute(
-        "insert into Properties (agent_id,address,price,area,description,listing_date) values (%s,%s,%s,%s,%s,%s)",
+        "insert into Properties (agent_id,address,price,area,description,listing_date,sold) values (%s,%s,%s,%s,%s,%s,false)",
         (
             randint(1,agents-1),
-            fake.address(),
+            fake.address().replace('\n',' '),
             round(uniform(200000,2000000),2),
             round(uniform(100,2000),2),
             choice((f'{randint(1,6)}BHK','Land','Orchard',f'{randint(2,6)} story')),

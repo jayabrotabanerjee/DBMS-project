@@ -1,10 +1,16 @@
 #!/bin/python
 from ttkbootstrap import Window,Label,Entry,Button,Notebook,Frame,Checkbutton,Treeview,Scrollbar,END,DoubleVar,IntVar
-from ttkbootstrap.constants import WARNING,DANGER,OUTLINE,SECONDARY,INFO
+from ttkbootstrap.constants import WARNING,DANGER,OUTLINE,SECONDARY,INFO,SUCCESS,DISABLED,NORMAL
 from RangeSlider.RangeSlider import RangeSliderH
 from mysql.connector import connect
 from mysql.connector.errors import DatabaseError,ProgrammingError
+from re import compile
+valid_float=compile(r'^[0-9]+(\.[0-9]*)?$')
 app=Window(title='Login',resizable=(False,False))
+#selections
+agent:int=None
+property_:int=None
+client:int=None
 #Main Window
 def main_app(database):
     app.title('Listings')
@@ -15,35 +21,91 @@ def main_app(database):
     tabs.add(transaction_tab:=Frame(tabs),text='Transaction')
     #property tab
     def query():
-        result_view.delete(*result_view.get_children())
         cursor=database.cursor()
-        cursor.execute(f'select property_id,address,price,description,area from Properties where address like "%{location_entry.get()}%" and description like "%{description_entry.get()}%" and area between {round(min_area.get()*1900+100,2)} and {round(max_area.get()*1900+100,2)} and price between {round(min_area.get()*1800000+200000,2)} and {round(max_area.get()*1800000+200000,2)} order by area,price;')
-        for item_id,address,price,description,area in cursor.fetchall():
-            result_view.insert("",END,iid=str(item_id),values=(address,description,str(area),str(price)))
-    Button(property_tab,text='New',bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
-    Label(property_tab,text='Location :').grid(row=1,column=0,sticky='E')
-    (location_entry:=Entry(property_tab)).grid(row=1,column=1,sticky='NSEW')
-    Label(property_tab,text='Type :').grid(row=2,column=0,sticky='E')
-    (description_entry:=Entry(property_tab)).grid(row=2,column=1,sticky='W')
-    Label(property_tab,text='Price :').grid(row=3,column=0,sticky='E')
+        show_all=available.get()==0
+        result_view.delete(*result_view.get_children())
+        cursor.execute(f'select property_id,address,price,description,area,sold from Properties where address like "%{location_entry.get()}%" and description like "%{description_entry.get()}%" and area between {round(min_area.get()*1900+100,2)} and {round(max_area.get()*1900+100,2)} and price between {round(min_area.get()*1800000+200000,2)} and {round(max_area.get()*1800000+200000,2)} order by area,price;')
+        for item_id,address,price,description,area,sold in cursor.fetchall():
+            if show_all or not bool(sold):
+                result_view.insert("",END,iid=item_id,values=(address,description,str(area),str(price)))
+    def select_property(event):
+        global property_
+        selected=result_view.selection()
+        item=result_view.identify_row(event.y)
+        if item not in selected:
+            property_=int(item)
+            result_view.selection_remove(*selected)
+            result_view.selection_add(item)
+            delete_button.configure(state=NORMAL,bootstyle=OUTLINE)
+        else:
+            property_=None
+            result_view.selection_remove(item)
+            delete_button.configure(state=DISABLED,bootstyle=DISABLED)
+        return 'break'
+    def new_property():
+        result_view.delete(*result_view.get_children())
+        search_property.pack_forget()
+        new_property.pack(expand=True,fill='both')
+    def remove_property():
+        cusor=database.cursor()
+        cursor.execute("delete from Properties where property_id=%s",property_)
+        result_view.delete(property_)
+        property_=None
+        delete_button.configure(state=DISABLED,bootstyle=DISABLED)
+    def property_back():
+        new_property.pack_forget()
+        search_property.pack(expand=True,fill='both')
+    def add_property():
+        if address_entry.get()=='':err_label_property.configure(text='No address entered')
+        elif type_entry.get()=='':err_label_property.configure(text='No description entered')
+        elif valid_float.search(price_entry.get())==None:err_label_property.configure(text='Not a valid price')
+        elif valid_float.search(area_entry.get())==None:err_label_property.configure(text='Not a valid area')
+        elif agent==None:err_label_property.configure(text='No agent selected')
+        else:
+            database.cursor().execute(
+                "insert into Properties (agent_id,address,price,area,description,listing_date,sold) values (%s,%s,%s,%s,%s,%s,false)",
+                (
+                    agent,
+                    address_entry.get(),
+                    round(float(price_entry.get()),2),
+                    round(float(area_entry.get()),2),
+                    description_entry.get(),
+                    datetime.now().strftime('%Y-%m-%d')
+                )
+            )
+            address_entry.delete(0,END)
+            type_entry.delete(0,END)
+            price_entry.delete(0,END)
+            area_entry.delete(0,END)
+            type_entry.delete(0,END)
+            db.commit()
+            err_label_property.configure(text='Property registered',bootstyle=INFO)
+    (search_property:=Frame(property_tab)).pack(expand=True,fill='both')
+    Button(search_property,text='New',command=new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (delete_button:=Button(search_property,text='Delete',command=remove_property,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
+    Label(search_property,text='Location :').grid(row=1,column=0,sticky='E')
+    (location_entry:=Entry(search_property)).grid(row=1,column=1,sticky='NSEW')
+    Label(search_property,text='Type :').grid(row=2,column=0,sticky='E')
+    (description_entry:=Entry(search_property)).grid(row=2,column=1,sticky='W')
+    Label(search_property,text='Price :').grid(row=3,column=0,sticky='E')
     min_price=DoubleVar(value=0.0);max_price=DoubleVar(value=1.0)
-    (price_slider:=RangeSliderH(property_tab,[min_price,max_price],padX=12,show_value=False)).grid(row=3,column=1,sticky='W')
-    (price_label:=Label(property_tab,text='₹ 2 - 20 Lakh')).grid(row=4,column=1,sticky='NSEW')
+    (price_slider:=RangeSliderH(search_property,[min_price,max_price],padX=12,show_value=False)).grid(row=3,column=1,sticky='W')
+    (price_label:=Label(search_property,text='₹ 2 - 20 Lakh')).grid(row=4,column=1,sticky='NSEW')
     price_change=lambda _,__,___:price_label.configure(text=f'₹ {round(min_price.get()*18+2,2)} - {round(max_price.get()*18+2,2)} Lakh')
     min_price.trace_add('write',price_change)
     max_price.trace_add('write',price_change)
-    Label(property_tab,text='Area :').grid(row=5,column=0,sticky='E')
+    Label(search_property,text='Area :').grid(row=5,column=0,sticky='E')
     min_area=DoubleVar(value=0.0);max_area=DoubleVar(value=1.0)
-    (area_slider:=RangeSliderH(property_tab,[min_area,max_area],padX=12,show_value=False)).grid(row=5,column=1,sticky='W')
-    (area_label:=Label(property_tab,text='100 - 2000 sq feet')).grid(row=6,column=1,sticky='NSEW')
+    (area_slider:=RangeSliderH(search_property,[min_area,max_area],padX=12,show_value=False)).grid(row=5,column=1,sticky='W')
+    (area_label:=Label(search_property,text='100 - 2000 sq feet')).grid(row=6,column=1,sticky='NSEW')
     area_change=lambda _,__,___:area_label.configure(text=f'{round(min_area.get()*1900+100,2)} - {round(max_price.get()*1900+100,2)} sq feet')
     min_area.trace_add('write',area_change)
     max_area.trace_add('write',area_change)
-    available=IntVar(property_tab,value=1)
-    Checkbutton(property_tab,text='Show Available',variable=available,onvalue=1,offvalue=0,state='selected',bootstyle=SECONDARY).grid(row=6,column=1,sticky='E')
-    Button(property_tab,text='Find',command=query).grid(row=7,column=1,sticky='E')
-    (scroll:=Scrollbar(property_tab,bootstyle=INFO)).grid(row=8,column=2,sticky='NSEW')
-    (result_view:=Treeview(property_tab,column=('c1','c2','c3','c4'),show='headings',bootstyle=INFO,xscrollcommand=scroll.set)).grid(row=8,column=0,columnspan=2,sticky='NSEW')
+    available=IntVar(search_property,value=1)
+    Checkbutton(search_property,text='Show Available',variable=available,onvalue=1,offvalue=0,state='selected',bootstyle=SECONDARY).grid(row=6,column=1,sticky='E')
+    Button(search_property,text='Find',command=query).grid(row=7,column=1,sticky='E')
+    (scroll:=Scrollbar(search_property,bootstyle=INFO)).grid(row=8,column=2,sticky='NSEW')
+    (result_view:=Treeview(search_property,column=('c1','c2','c3','c4'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=scroll.set)).grid(row=8,column=0,columnspan=2,sticky='NSEW')
     result_view.column('0',anchor='e')
     result_view.heading('0',text='Location')
     result_view.column('1',anchor='w')
@@ -53,6 +115,46 @@ def main_app(database):
     result_view.column('3',anchor='w')
     result_view.heading('3',text='Price (₹)')
     scroll.configure(command=result_view.yview)
+    result_view.bind('<Button-1>',select_property)
+    #new property
+    new_property=Frame(property_tab)
+    Button(new_property,text='<-',command=property_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (err_label_property:=Label(new_property,text='',bootstyle=DANGER)).grid(row=0,column=1,sticky='NSEW')
+    Label(new_property,text='Address :').grid(row=1,column=0,sticky='E')
+    (address_entry:=Entry(new_property)).grid(row=1,column=1,sticky='W')
+    Label(new_property,text='Area(sq feet) :').grid(row=2,column=0,sticky='E')
+    (area_entry:=Entry(new_property)).grid(row=2,column=1,sticky='W')
+    Label(new_property,text='Description :').grid(row=3,column=0,sticky='E')
+    (type_entry:=Entry(new_property)).grid(row=3,column=1,sticky='W')
+    Label(new_property,text='Price(₹) :').grid(row=4,column=0,sticky='E')
+    (price_entry:=Entry(new_property)).grid(row=4,column=1,sticky='W')
+    Button(new_property,text='Add',command=add_property).grid(row=5,columnspan=2,sticky='NSEW')
+    #client tab
+    def query_client():
+        pass
+    def new_client():
+        pass
+    def remove_client():
+        pass
+    def select_client(event):
+        pass
+    (see_clients:=Frame(client_tab)).pack(expand=True,fill='both')
+    Button(see_clients,text='New',command=new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (delete_client_button:=Button(see_clients,text='Delete',command=remove_client,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
+    Label(see_clients,text='Search :').grid(row=1,column=0,sticky='E')
+    (client_entry:=Entry(see_clients)).grid(row=1,column=1,sticky='NSEW')
+    (client_scroll:=Scrollbar(see_clients,bootstyle=INFO)).grid(row=2,column=2,sticky='NSEW')
+    (client_view:=Treeview(see_clients,column=('c1','c2','c3'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=client_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
+    client_view.column('0',anchor='e')
+    client_view.heading('0',text='Name')
+    client_view.column('1',anchor='w')
+    client_view.heading('1',text='Phone')
+    client_view.column('2',anchor='w')
+    client_view.heading('2',text='Email')
+    client_scroll.configure(command=client_view.yview)
+    client_view.bind('<Button-1>',select_client)
+    query_client()
+    #new client
 #Login window
 def login(*_):
     try:
