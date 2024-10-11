@@ -8,8 +8,8 @@ from re import compile
 valid_float=compile(r'^[0-9]+(\.[0-9]*)?$')
 app=Window(title='Login',resizable=(False,False))
 #selections
-agent:int=None
-property_:int=None
+agent:str=None
+property_:str=None
 client:int=None
 #Main Window
 def main_app(database):
@@ -18,7 +18,7 @@ def main_app(database):
     tabs.add(property_tab:=Frame(tabs),text='Properties')
     tabs.add(client_tab:=Frame(tabs),text='Clients')
     tabs.add(agent_tab:=Frame(tabs),text='Agents')
-    tabs.add(transaction_tab:=Frame(tabs),text='Transaction')
+    tabs.add(transaction_tab:=Frame(tabs),text='Transactions')
     #property tab
     def query():
         cursor=database.cursor()
@@ -33,7 +33,7 @@ def main_app(database):
         selected=result_view.selection()
         item=result_view.identify_row(event.y)
         if item not in selected:
-            property_=int(item)
+            property_=item
             result_view.selection_remove(*selected)
             result_view.selection_add(item)
             delete_button.configure(state=NORMAL,bootstyle=OUTLINE)
@@ -42,7 +42,7 @@ def main_app(database):
             result_view.selection_remove(item)
             delete_button.configure(state=DISABLED,bootstyle=DISABLED)
         return 'break'
-    def new_property():
+    def go_new_property():
         result_view.delete(*result_view.get_children())
         search_property.pack_forget()
         new_property.pack(expand=True,fill='both')
@@ -56,6 +56,7 @@ def main_app(database):
         new_property.pack_forget()
         search_property.pack(expand=True,fill='both')
     def add_property():
+        err_label_property.configure(bootstyle=WARNING)
         if address_entry.get()=='':err_label_property.configure(text='No address entered')
         elif type_entry.get()=='':err_label_property.configure(text='No description entered')
         elif valid_float.search(price_entry.get())==None:err_label_property.configure(text='Not a valid price')
@@ -63,7 +64,7 @@ def main_app(database):
         elif agent==None:err_label_property.configure(text='No agent selected')
         else:
             database.cursor().execute(
-                "insert into Properties (agent_id,address,price,area,description,listing_date,sold) values (%s,%s,%s,%s,%s,%s,false)",
+                "insert into Properties (agent_id,address,price,area,description,listing_date,sold) values (%s,%s,%s,%s,%s,%s,false);",
                 (
                     agent,
                     address_entry.get(),
@@ -78,10 +79,10 @@ def main_app(database):
             price_entry.delete(0,END)
             area_entry.delete(0,END)
             type_entry.delete(0,END)
-            db.commit()
+            database.commit()
             err_label_property.configure(text='Property registered',bootstyle=INFO)
     (search_property:=Frame(property_tab)).pack(expand=True,fill='both')
-    Button(search_property,text='New',command=new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    Button(search_property,text='New',command=go_new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
     (delete_button:=Button(search_property,text='Delete',command=remove_property,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
     Label(search_property,text='Location :').grid(row=1,column=0,sticky='E')
     (location_entry:=Entry(search_property)).grid(row=1,column=1,sticky='NSEW')
@@ -131,15 +132,57 @@ def main_app(database):
     Button(new_property,text='Add',command=add_property).grid(row=5,columnspan=2,sticky='NSEW')
     #client tab
     def query_client():
-        pass
-    def new_client():
-        pass
+        searched=client_entry.get()
+        cursor=database.cursor()
+        client_view.delete(*client_view.get_children())
+        cursor.execute(f'select * from Clients where name like "%{searched}%" or phone like "%{searched}%" or email like "%{searched}%";')
+        for client_id,name,phone,email in cursor.fetchall():
+            result_view.insert("",END,iid=client_id,values=(name,phone,email))
+    def go_new_client():
+        see_clients.pack_forget()
+        new_client.pack(expand=True,fill='both')
+    def client_back():
+        new_client.pack_forget()
+        see_clients.pack(expand=True,fill='both')
+    def add_client():
+        err_label_client.configure(bootstyle=WARNING)
+        if name_entry_client.get()=='':err_label_client.configure(text='No name entered')
+        elif phone_entry_client.get()=='':err_label_client.configure(text='No phone number entered')
+        elif email_entry_client.get()=='':err_label_client.configure(text='Not email entered')
+        else:
+            database.cursor.execute(
+                "insert into Clients (name,phone,email) values (%s,%s,%s);",
+                (name_entry_client.get(),phone_entry_client.get(),email_entry_client.get())
+            )
+            name_entry_client.delete(0,END)
+            phone_entry_client.delete(0,END)
+            email_entry_client.delete(0,END)
+            database.commt()
+            err_label_client.configure(text='Client registered',bootstyle=INFO)
     def remove_client():
-        pass
+        cusor=database.cursor()
+        cursor.execute("delete from Clients where property_id=%s",client)
+        client_view.delete(client)
+        client=None
+        delete_client_button.configure(state=DISABLED,bootstyle=DISABLED)
     def select_client(event):
-        pass
+        global client
+        selected=client_view.selection()
+        item=client_view.identify_row(event.y)
+        if item not in selected:
+            client=int(item)
+            client_view.selection_remove(*selected)
+            client_view.selection_add(item)
+            delete_client_button.configure(state=NORMAL,bootstyle=OUTLINE)
+        else:
+            client=None
+            client_view.selection_remove(item)
+            delete_client_button.configure(state=DISABLED,bootstyle=DISABLED)
+        return 'break'
     (see_clients:=Frame(client_tab)).pack(expand=True,fill='both')
-    Button(see_clients,text='New',command=new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    see_clients.rowconfigure(2,weight=3)
+    see_clients.columnconfigure(1,weight=4)
+    Button(see_clients,text='New',command=go_new_client,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
     (delete_client_button:=Button(see_clients,text='Delete',command=remove_client,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
     Label(see_clients,text='Search :').grid(row=1,column=0,sticky='E')
     (client_entry:=Entry(see_clients)).grid(row=1,column=1,sticky='NSEW')
@@ -155,6 +198,20 @@ def main_app(database):
     client_view.bind('<Button-1>',select_client)
     query_client()
     #new client
+    new_client=Frame(client_tab)
+    Button(new_client,text='<-',command=client_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (err_label_client:=Label(new_client,text='',bootstyle=DANGER)).grid(row=0,column=1,sticky='NSEW')
+    Label(new_client,text='Name :').grid(row=1,column=0,sticky='E')
+    (name_entry_client:=Entry(new_client)).grid(row=1,column=1,sticky='W')
+    Label(new_client,text='Phone :').grid(row=2,column=0,sticky='E')
+    (phone_entry_client:=Entry(new_client)).grid(row=2,column=1,sticky='W')
+    Label(new_client,text='Email :').grid(row=3,column=0,sticky='E')
+    (email_entry_client:=Entry(new_client)).grid(row=3,column=1,sticky='W')
+    Button(new_client,text='Add',command=add_client).grid(row=4,columnspan=2,sticky='NSEW')
+    #client tab
+    #new client
+    #transaction rab
+    #new transaction
 #Login window
 def login(*_):
     try:
