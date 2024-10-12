@@ -36,8 +36,5 @@ CREATE TABLE IF NOT EXISTS Transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     property_id INT,
     transaction_date DATE,
-    amount DECIMAL(10, 2) NOT NULL,
-    buyer_id INT,
-    FOREIGN KEY (property_id) REFERENCES Properties(property_id) ON DELETE CASCADE,
-    FOREIGN KEY (buyer_id) REFERENCES Clients(client_id) ON DELETE CASCADE
+    buyer_id INT
 );

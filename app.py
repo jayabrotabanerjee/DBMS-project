@@ -131,19 +131,20 @@ def main_app(database):
     (price_entry:=Entry(new_property)).grid(row=4,column=1,sticky='W')
     Button(new_property,text='Add',command=add_property).grid(row=5,columnspan=2,sticky='NSEW')
     #client tab
-    def query_client():
+    def query_client(_):
         searched=client_entry.get()
         cursor=database.cursor()
         client_view.delete(*client_view.get_children())
         cursor.execute(f'select * from Clients where name like "%{searched}%" or phone like "%{searched}%" or email like "%{searched}%";')
         for client_id,name,phone,email in cursor.fetchall():
-            result_view.insert("",END,iid=client_id,values=(name,phone,email))
+            client_view.insert("",END,iid=client_id,values=(name,phone,email))
     def go_new_client():
         see_clients.pack_forget()
         new_client.pack(expand=True,fill='both')
     def client_back():
         new_client.pack_forget()
         see_clients.pack(expand=True,fill='both')
+        query_client(None)
     def add_client():
         err_label_client.configure(bootstyle=WARNING)
         if name_entry_client.get()=='':err_label_client.configure(text='No name entered')
@@ -170,7 +171,7 @@ def main_app(database):
         selected=client_view.selection()
         item=client_view.identify_row(event.y)
         if item not in selected:
-            client=int(item)
+            client=item
             client_view.selection_remove(*selected)
             client_view.selection_add(item)
             delete_client_button.configure(state=NORMAL,bootstyle=OUTLINE)
@@ -186,6 +187,7 @@ def main_app(database):
     (delete_client_button:=Button(see_clients,text='Delete',command=remove_client,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
     Label(see_clients,text='Search :').grid(row=1,column=0,sticky='E')
     (client_entry:=Entry(see_clients)).grid(row=1,column=1,sticky='NSEW')
+    client_entry.bind('<KeyRelease>',query_client)
     (client_scroll:=Scrollbar(see_clients,bootstyle=INFO)).grid(row=2,column=2,sticky='NSEW')
     (client_view:=Treeview(see_clients,column=('c1','c2','c3'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=client_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
     client_view.column('0',anchor='e')
@@ -196,7 +198,7 @@ def main_app(database):
     client_view.heading('2',text='Email')
     client_scroll.configure(command=client_view.yview)
     client_view.bind('<Button-1>',select_client)
-    query_client()
+    query_client(None)
     #new client
     new_client=Frame(client_tab)
     Button(new_client,text='<-',command=client_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
@@ -211,6 +213,39 @@ def main_app(database):
     #client tab
     #new client
     #transaction rab
+    def sell():
+        pass
+    def transaction_back():
+        pass
+    def query_transaction(_):
+        searched=transactions_entry.get()
+        cursor=database.cursor()
+        transaction_view.delete(*transaction_view.get_children())
+        cursor.execute(f'select transaction_id,Clients.name,Agents.name,Properties.address,price from Transactions join Clients on Clients.client_id=Transactions.buyer_id join Properties on Properties.property_id=Transactions.property_id join Agents on Properties.agent_id=Agents.agent_id where Clients.name like "%{searched}%" or Agents.name like "%{searched}%" or Properties.address like "%{searched}%" order by transaction_id;')
+        for transaction_id,agent_name,client_name,address,amount in cursor.fetchall():
+            transaction_view.insert("",END,iid=transaction_id,values=(transaction_id,agent_name,client_name,address,amount))
+    (see_transactions:=Frame(transaction_tab)).pack(expand=True,fill='both')
+    see_transactions.rowconfigure(2,weight=3)
+    see_transactions.columnconfigure(1,weight=4)
+    Button(see_transactions,text='New',command=sell,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    Label(see_transactions,text='Search :').grid(row=1,column=0,sticky='E')
+    (transactions_entry:=Entry(see_transactions)).grid(row=1,column=1,sticky='NSEW')
+    transactions_entry.bind('<KeyRelease>',query_transaction)
+    (transaction_scroll:=Scrollbar(see_transactions,bootstyle=INFO)).grid(row=2,column=2,sticky='NSEW')
+    (transaction_view:=Treeview(see_transactions,column=('c1','c2','c3','c4','c5'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=transaction_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
+    transaction_view.column('0',anchor='e')
+    transaction_view.heading('0',text='Id')
+    transaction_view.column('1',anchor='w')
+    transaction_view.heading('1',text='From')
+    transaction_view.column('2',anchor='w')
+    transaction_view.heading('2',text='To')
+    transaction_view.column('3',anchor='w')
+    transaction_view.heading('3',text='For')
+    transaction_view.column('4',anchor='w')
+    transaction_view.heading('4',text='Amount')
+    transaction_scroll.configure(command=transaction_view.yview)
+    transaction_view.bind('<Button-1>',select_client)
+    query_transaction(None)
     #new transaction
 #Login window
 def login(*_):

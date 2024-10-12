@@ -31,7 +31,7 @@ CREATE TABLE `Agents` (
   PRIMARY KEY (`agent_id`),
   UNIQUE KEY `phone` (`phone`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,16 +41,13 @@ CREATE TABLE `Agents` (
 LOCK TABLES `Agents` WRITE;
 /*!40000 ALTER TABLE `Agents` DISABLE KEYS */;
 INSERT INTO `Agents` VALUES
-(1,'Aditya Deshmukh','02686778979','vigchampak@example.net'),
-(2,'Sneha Naidu','+917968420819','lakshmibatta@example.com'),
-(3,'Advay Gara','0314692082','cyogi@example.com'),
-(4,'Leela Warrior','9593093280','obajwa@example.org'),
-(5,'Oscar Savant','07387209164','janani74@example.com'),
-(6,'Manbir Pant','+915009018068','chasmumrana@example.net'),
-(7,'Balveer Bakshi','05855072551','fmadan@example.net'),
-(8,'Omaja Tella','08294183731','reyanshkala@example.com'),
-(9,'Prisha Bains','+918467802330','udeol@example.org'),
-(10,'Kavya Date','1613781820','biswasnaveen@example.org');
+(1,'Girish Sahota','+912196945463','diyamohanty@example.com'),
+(2,'Krisha Sinha','02481771475','arya28@example.net'),
+(3,'Warjas Basu','02232219307','sanghaisaac@example.com'),
+(4,'Patrick Yadav','03407175500','savantnidhi@example.net'),
+(5,'Imaran Thakur','08011022442','bsami@example.net'),
+(6,'Mitali Majumdar','+915663153071','bnatarajan@example.org'),
+(7,'Tejas Tank','+919551224211','kchaudhari@example.org');
 /*!40000 ALTER TABLE `Agents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -69,7 +66,7 @@ CREATE TABLE `Clients` (
   PRIMARY KEY (`client_id`),
   UNIQUE KEY `phone` (`phone`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -78,6 +75,34 @@ CREATE TABLE `Clients` (
 
 LOCK TABLES `Clients` WRITE;
 /*!40000 ALTER TABLE `Clients` DISABLE KEYS */;
+INSERT INTO `Clients` VALUES
+(1,'Zarna Sharma','00009595988','prasadorinder@example.org'),
+(2,'Benjamin Varkey','01569474126','sapte@example.org'),
+(3,'Teerth Karnik','+919329905141','xray@example.net'),
+(4,'Faraj Jhaveri','9448947381','hemang54@example.org'),
+(5,'William Krishna','+915052303335','benjaminnatt@example.net'),
+(6,'Warhi Sandal','+910130419656','edwinbrinda@example.com'),
+(7,'Yadavi Majumdar','06282261151','abdulsha@example.com'),
+(8,'Vritti Jhaveri','04952866289','msundaram@example.net'),
+(9,'Samuel Nigam','02765446901','zaitra73@example.org'),
+(10,'Meghana Varghese','+913760738313','irasidhu@example.org'),
+(11,'Om Borra','+916667418642','falak03@example.org'),
+(12,'Chandresh Narula','03477226352','garimamallick@example.org'),
+(13,'Megha Srinivasan','5338427145','shravya18@example.org'),
+(14,'Baljiwan Sur','06694130254','lokeindali@example.org'),
+(15,'Anita Krishnamurthy','6896761661','bakhshi51@example.org'),
+(16,'Ekiya Keer','9940036583','aachalraja@example.com'),
+(17,'Wriddhish Sahni','6773403135','ezachariah@example.net'),
+(18,'Harinakshi Taneja','3344792118','dalaja23@example.com'),
+(19,'Zayyan Patel','+914504514741','bina89@example.com'),
+(20,'Laban Ravi','+918519587346','jandra@example.org'),
+(21,'Brijesh Chacko','05431984285','anviwarrior@example.net'),
+(22,'Lila Dyal','1706325522','apandya@example.net'),
+(23,'Vasudha Kumer','+911499037791','acharyaagastya@example.com'),
+(24,'Warinder Dara','01601661471','kibedayamai@example.com'),
+(25,'Pratyush Dewan','00513522696','ishaanpau@example.com'),
+(26,'Naveen Bassi','02504697918','khannamanthan@example.net'),
+(27,'Agastya Sankar','5530377850','qarin81@example.com');
 /*!40000 ALTER TABLE `Clients` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,7 +125,7 @@ CREATE TABLE `Properties` (
   PRIMARY KEY (`property_id`),
   KEY `agent_id` (`agent_id`),
   CONSTRAINT `Properties_ibfk_1` FOREIGN KEY (`agent_id`) REFERENCES `Agents` (`agent_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,56 +135,68 @@ CREATE TABLE `Properties` (
 LOCK TABLES `Properties` WRITE;
 /*!40000 ALTER TABLE `Properties` DISABLE KEYS */;
 INSERT INTO `Properties` VALUES
-(1,8,'84/64, Varghese Road Mau-114018',537906.75,612.47,'Orchard','2014-08-12',0),
-(2,5,'63/16, Mohanty Nagar, Ozhukarai 202872',410567.25,417.59,'5BHK','2022-08-17',0),
-(3,6,'30/51 Loke Road, Tenali 385828',423529.83,356.60,'Orchard','2021-05-10',0),
-(4,8,'29/21 Murthy, Narasaraopet 210430',1379394.26,1177.31,'3BHK','2022-01-08',0),
-(5,2,'489 Grover Chowk Nagercoil-663359',1295856.02,471.46,'2 story','2024-08-01',0),
-(6,7,'64/26, Sawhney Marg, Ramagundam 245355',453069.74,553.18,'3 story','2023-10-14',0),
-(7,4,'35/01, Mallick Jalandhar 331296',651097.11,1237.57,'Land','2019-03-10',0),
-(8,2,'50/149 Jhaveri Road, Bijapur-229245',433004.67,908.57,'Land','2017-04-15',0),
-(9,6,'783 Narain Chowk Dhanbad-612846',611978.24,1909.16,'Orchard','2020-01-20',0),
-(10,5,'31/74, Manne Chowk Jorhat 585465',967126.93,1530.25,'Orchard','2022-01-23',0),
-(11,4,'72/23 Ram Road, Tadepalligudem-149281',737961.75,842.28,'2 story','2013-12-12',0),
-(12,8,'291 Hans Street Kadapa-939784',794829.16,236.17,'Orchard','2024-05-06',0),
-(13,9,'092, Keer Nagar Kozhikode-344068',1365740.39,1095.01,'Orchard','2020-09-23',0),
-(14,8,'249, Kalla Path, Chandrapur-316473',1488814.96,858.73,'6 story','2023-12-04',0),
-(15,2,'85, Gera Path, Pali-246729',683502.73,1327.98,'Orchard','2020-04-14',0),
-(16,2,'82/253 Choudhry Street Kulti 108061',224940.74,328.98,'Land','2015-07-06',0),
-(17,7,'42/59, Kara Nagar Durgapur-132347',272157.88,919.25,'Orchard','2021-04-08',0),
-(18,4,'H.No. 144, Ahluwalia Street Pudukkottai 106189',1752402.22,1663.49,'5 story','2016-08-05',0),
-(19,1,'82/145 Bakshi Nanded 898186',1392725.75,1714.84,'Land','2021-05-20',0),
-(20,9,'434, Narain Circle Bally 491301',817072.79,865.27,'Orchard','2018-03-08',0),
-(21,4,'H.No. 52 Choudhary Path Madanapalle 268409',1488832.27,1777.82,'5 story','2017-12-17',0),
-(22,2,'51 Chad Zila Agra-413362',1282130.16,841.29,'2 story','2024-05-14',0),
-(23,1,'985, Balakrishnan Ganj, Berhampore 002659',1956667.33,879.81,'Orchard','2015-02-07',0),
-(24,4,'82/422 Boase Nagar, Alappuzha 646219',1979329.69,1137.03,'Orchard','2015-02-04',0),
-(25,9,'H.No. 057, Khanna Street Ratlam 446593',724935.33,463.67,'Land','2014-05-26',0),
-(26,2,'03/672, Sundaram Path Mysore 942566',1923923.71,1920.67,'6 story','2015-09-13',0),
-(27,1,'29, Borah Ganj, Sambalpur-965555',1173498.40,1039.03,'Land','2013-10-16',0),
-(28,8,'H.No. 27, Choudhury Nagar Rajpur Sonarpur 955690',482318.74,1596.44,'6BHK','2016-06-16',0),
-(29,9,'223, Bahri Road Bhopal 567666',251560.33,1612.21,'Land','2014-03-21',0),
-(30,6,'618 Bahri Zila, Sonipat-016487',1085217.15,429.65,'Land','2019-10-30',0),
-(31,1,'99/408, Rana Street Singrauli-112569',1618733.49,968.08,'5 story','2023-02-28',0),
-(32,7,'39 Ramanathan Marg, New Delhi 745144',531191.12,466.56,'Orchard','2017-01-11',0),
-(33,4,'11/988, Hayer, Jaunpur-920636',976837.81,1178.21,'Orchard','2016-05-05',0),
-(34,5,'44/834 Kulkarni Road Karaikudi-097699',1325537.26,1073.57,'Land','2020-10-19',0),
-(35,7,'45/38, Soman Sirsa 123113',805668.06,744.08,'6 story','2019-07-04',0),
-(36,6,'71/242 Tandon Marg Sambhal 491888',546689.40,846.55,'Orchard','2014-04-18',0),
-(37,2,'07/62 Agate Marg, Kulti 960681',1488437.63,330.75,'3 story','2014-06-12',0),
-(38,5,'H.No. 03, Merchant Zila, Chittoor-665657',1885626.29,1893.27,'5 story','2020-07-11',0),
-(39,7,'664 Amble Road, Srinagar 882325',883240.40,935.40,'Orchard','2022-03-15',0),
-(40,2,'273, Andra Circle Coimbatore-533545',1322075.47,1081.10,'Land','2015-07-01',0),
-(41,7,'19/82 Ghosh Circle, Korba-654028',1634859.19,1064.90,'Land','2019-06-18',0),
-(42,3,'H.No. 25 Dar Road, Panipat-354260',677687.83,1339.58,'5 story','2014-11-24',0),
-(43,8,'H.No. 78, Choudhury Street, Meerut 523235',965924.60,1062.60,'5 story','2017-03-15',0),
-(44,7,'H.No. 28, Ratti Nagar Satna 364658',1174965.14,119.94,'Orchard','2022-10-23',0),
-(45,6,'H.No. 593, Wason Path Kamarhati 455624',863533.18,1231.12,'4BHK','2019-01-20',0),
-(46,9,'H.No. 440, Banerjee Chowk, Belgaum 647469',291004.02,1448.38,'5BHK','2015-10-05',0),
-(47,9,'660 Sankaran Nagar, Dhule 304117',1472621.91,1637.43,'Orchard','2023-01-16',0),
-(48,7,'H.No. 751 Varghese Circle, Lucknow-915629',600989.50,933.01,'Orchard','2019-08-23',0),
-(49,2,'503, Raman Street Bidar 041045',1485980.96,190.32,'Orchard','2020-05-12',0),
-(50,4,'04/199, Dey Road, Avadi-656150',987806.09,1762.84,'Orchard','2016-03-26',0);
+(1,1,'H.No. 798 Bandi Street, Arrah 552929',494392.55,199.95,'5 story','2020-10-23',1),
+(2,6,'27, Dubey, Guntakal-612587',1331024.50,1217.98,'Land','2020-03-10',1),
+(3,2,'92/951, Ben Circle, Bettiah-078999',1901885.12,230.52,'2 story','2013-11-02',1),
+(4,1,'941 Chhabra Marg, Tadepalligudem-165002',1000500.46,1886.47,'Land','2021-01-24',1),
+(5,5,'H.No. 40, Rastogi Circle, Indore 155290',1341780.13,1372.02,'Land','2013-11-05',0),
+(6,3,'28/457 Bhattacharyya Road, Pune-392019',950913.50,1533.76,'Land','2024-08-28',1),
+(7,6,'17/06, Lad Circle, Ramgarh-417817',696570.71,1526.94,'4BHK','2021-10-24',0),
+(8,4,'H.No. 390 Roy, Jehanabad-262917',1450567.71,761.15,'4BHK','2020-03-03',1),
+(9,1,'22/28, Manne Circle, Rajkot 923695',290021.96,1116.16,'Orchard','2020-03-10',0),
+(10,2,'71/956, Soni Street Sagar-193622',1781185.53,1503.44,'Land','2024-03-02',0),
+(11,3,'H.No. 512 Karnik Marg, Kollam 628259',1858666.36,1314.53,'4 story','2022-12-09',1),
+(12,1,'H.No. 905 Amble Street Muzaffarnagar-527931',1841113.95,1096.57,'3BHK','2022-05-27',0),
+(13,3,'H.No. 54, Gour, Visakhapatnam-040281',1274436.51,1840.98,'4BHK','2018-04-20',1),
+(14,6,'53/40, Warrior Circle, Navi Mumbai-269518',1399411.28,1668.21,'2 story','2017-04-27',0),
+(15,2,'H.No. 37, Bava Ganj Malda-986907',321269.88,1961.45,'2 story','2013-12-14',0),
+(16,3,'51/067, Manda Road, Vijayanagaram 258799',200086.92,815.58,'Orchard','2014-03-13',1),
+(17,5,'587, Rana Zila, Guna-499097',758457.54,1112.25,'Land','2021-10-26',1),
+(18,1,'59/205 Chandra Road, Singrauli-768260',335333.34,611.64,'Land','2024-01-03',1),
+(19,6,'178 Cheema Marg, Tadepalligudem-469024',1984530.35,718.58,'Land','2022-07-16',0),
+(20,2,'08 Parmar Chowk, Gangtok-226050',1011909.43,999.10,'2BHK','2017-02-07',1),
+(21,3,'H.No. 170, Gola Marg, Secunderabad-779806',1992037.13,1264.12,'Orchard','2015-09-02',0),
+(22,1,'H.No. 189, Vig Ganj Durg 997316',517899.43,1384.87,'Orchard','2022-03-30',1),
+(23,1,'61 Ramesh Marg, Tadipatri-899070',425023.83,906.78,'Orchard','2021-04-12',1),
+(24,3,'H.No. 15 Prakash Marg, Panipat 395866',311090.90,1864.69,'2BHK','2021-03-11',1),
+(25,5,'591, Wable Street Phusro 545666',540940.23,475.09,'Orchard','2018-05-21',1),
+(26,4,'49/17, Dutta Circle Hapur 609806',1612065.21,458.56,'2BHK','2017-07-04',1),
+(27,1,'H.No. 81 Dubey Ganj Dehradun 204896',1186754.95,303.36,'Orchard','2022-04-06',1),
+(28,5,'60/323 Bera Chowk Tiruvottiyur 652861',260148.82,134.49,'Orchard','2022-01-27',1),
+(29,2,'28/28, Roy Circle, Siliguri-252839',1452011.04,1262.10,'Land','2020-03-04',1),
+(30,3,'86/59, Agate Nagar, Bidar 501620',725632.00,120.00,'Land','2019-01-31',1),
+(31,3,'96, Pau Path Jamshedpur 864695',1464729.27,1214.87,'Land','2023-11-04',1),
+(32,2,'H.No. 948, Hans Chowk, Yamunanagar 676631',724351.05,1524.15,'Orchard','2016-12-26',1),
+(33,3,'57, Arya Zila, Kakinada 285832',1408008.06,1294.94,'4 story','2021-02-11',1),
+(34,1,'H.No. 68, Bhat Haridwar-921118',1641023.08,852.43,'5BHK','2015-02-15',1),
+(35,6,'76 Karpe Zila Pallavaram-364286',1139249.67,1873.87,'Orchard','2024-03-04',1),
+(36,3,'98 Sampath Zila, Tiruvottiyur 821645',886542.99,126.15,'5 story','2015-08-12',1),
+(37,4,'H.No. 57, Walia, Miryalaguda 166720',1206942.41,1392.70,'4 story','2018-10-09',1),
+(38,2,'87/360, Zachariah Chowk, Visakhapatnam 341274',748716.33,803.75,'Land','2019-02-26',1),
+(39,1,'84/90, Chad Circle, Thrissur-821282',1267155.50,1884.69,'4 story','2020-05-26',1),
+(40,3,'03/82 Rai Chowk Anand 313454',1421674.66,886.44,'1BHK','2015-01-14',0),
+(41,2,'H.No. 969 Dave Ganj Mysore 081511',778457.52,1027.15,'2 story','2021-12-25',0),
+(42,1,'H.No. 27 Kapoor Path Ghaziabad-297679',1866687.22,1716.92,'2 story','2016-01-18',1),
+(43,4,'H.No. 037, Chacko Marg, Raurkela Industrial Township 565637',1087701.67,958.24,'Orchard','2019-03-07',0),
+(44,3,'26 Kalita Street, Raiganj-307120',1783453.85,649.55,'Land','2023-08-17',1),
+(45,2,'34/442 Pradhan Road Bellary 562815',1092535.15,1148.01,'2BHK','2021-06-11',1),
+(46,5,'327, Dutta Zila, Chittoor-139195',989224.77,685.36,'Orchard','2017-04-23',1),
+(47,5,'80/177 Keer Road Hubli–Dharwad 983971',1604897.72,1332.41,'Land','2017-03-27',1),
+(48,2,'H.No. 875, Kapadia Road Aurangabad 952341',1329112.97,544.10,'6 story','2023-07-25',0),
+(49,3,'04/43, Bali Aligarh-310399',1152397.79,1839.29,'4 story','2023-04-26',1),
+(50,5,'40, Verma Ganj Kollam-685140',452178.56,1502.44,'5BHK','2014-04-27',1),
+(51,6,'H.No. 40, Bansal Road Yamunanagar 049152',583564.73,441.47,'Land','2021-11-15',1),
+(52,3,'86/915, Lala Chowk, Kulti-314218',486830.96,1814.12,'Orchard','2022-08-20',1),
+(53,5,'H.No. 301, Choudhary Nizamabad 853212',528819.95,1705.44,'Land','2016-05-18',1),
+(54,5,'53 Mittal Nagar Saharanpur-222687',1217053.85,1125.62,'Land','2019-07-17',1),
+(55,4,'34, Nagarajan, Mysore 670599',363641.81,418.19,'5 story','2015-07-08',1),
+(56,1,'H.No. 07 Bandi Chowk Anand 667183',1723310.33,909.91,'Orchard','2022-03-29',0),
+(57,2,'H.No. 00 Bassi, Aurangabad-839405',1851583.64,1153.12,'6BHK','2018-06-08',1),
+(58,5,'93/03 Kapoor Road Bhiwani-350424',975596.18,1218.99,'Land','2024-01-21',0),
+(59,1,'429, Oza Zila Ongole 709793',421878.65,522.38,'4 story','2021-05-10',1),
+(60,2,'39/626, Mander, Jalgaon 712171',384099.68,921.37,'Land','2024-09-27',1),
+(61,5,'H.No. 423 Verma Street, Bongaigaon 765342',1295742.10,1505.87,'Land','2018-05-30',0),
+(62,2,'94/66 Chadha Street Thane-241185',789180.37,1474.57,'3BHK','2015-03-29',0);
 /*!40000 ALTER TABLE `Properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,14 +211,9 @@ CREATE TABLE `Transactions` (
   `transaction_id` int(11) NOT NULL AUTO_INCREMENT,
   `property_id` int(11) DEFAULT NULL,
   `transaction_date` date DEFAULT NULL,
-  `amount` decimal(10,2) NOT NULL,
   `buyer_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`transaction_id`),
-  KEY `property_id` (`property_id`),
-  KEY `buyer_id` (`buyer_id`),
-  CONSTRAINT `Transactions_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `Properties` (`property_id`) ON DELETE CASCADE,
-  CONSTRAINT `Transactions_ibfk_2` FOREIGN KEY (`buyer_id`) REFERENCES `Clients` (`client_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`transaction_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,6 +222,52 @@ CREATE TABLE `Transactions` (
 
 LOCK TABLES `Transactions` WRITE;
 /*!40000 ALTER TABLE `Transactions` DISABLE KEYS */;
+INSERT INTO `Transactions` VALUES
+(1,15,'2022-09-18',23),
+(2,38,'2022-10-25',11),
+(3,53,'2022-04-17',23),
+(4,34,'2024-04-06',6),
+(5,27,'2023-04-08',10),
+(6,24,'2022-06-18',24),
+(7,37,'2023-04-13',16),
+(8,29,'2021-05-13',17),
+(9,51,'2024-05-06',12),
+(10,5,'2024-09-14',14),
+(11,33,'2023-10-20',18),
+(12,45,'2017-10-30',26),
+(13,22,'2021-08-17',11),
+(14,2,'2020-03-22',3),
+(15,50,'2023-12-28',15),
+(16,56,'2023-08-08',21),
+(17,1,'2022-09-05',21),
+(18,21,'2022-11-28',11),
+(19,31,'2022-02-26',12),
+(20,52,'2023-12-15',26),
+(21,41,'2022-04-03',23),
+(22,48,'2024-05-18',25),
+(23,17,'2024-03-27',22),
+(24,58,'2024-04-11',22),
+(25,35,'2018-02-08',20),
+(26,26,'2024-05-15',0),
+(27,36,'2021-01-12',10),
+(28,7,'2021-03-05',11),
+(29,59,'2024-09-27',9),
+(30,28,'2021-02-12',4),
+(31,0,'2021-12-26',18),
+(32,46,'2018-07-22',5),
+(33,16,'2023-10-28',5),
+(34,23,'2023-06-17',22),
+(35,19,'2023-12-14',20),
+(36,25,'2021-10-21',24),
+(37,44,'2024-04-16',10),
+(38,43,'2024-04-02',14),
+(39,10,'2023-04-19',17),
+(40,49,'2020-08-12',17),
+(41,32,'2024-09-09',0),
+(42,3,'2024-05-29',16),
+(43,54,'2024-02-27',19),
+(44,12,'2020-06-15',11),
+(45,30,'2024-04-19',2);
 /*!40000 ALTER TABLE `Transactions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -202,4 +280,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2024-10-07 21:26:06
+-- Dump completed on 2024-10-12 22:52:48
