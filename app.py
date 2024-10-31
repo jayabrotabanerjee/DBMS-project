@@ -83,7 +83,7 @@ def main_app(database):
             err_label_property.configure(text='Property registered',bootstyle=INFO)
     (search_property:=Frame(property_tab)).pack(expand=True,fill='both')
     Button(search_property,text='New',command=go_new_property,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
-    (delete_button:=Button(search_property,text='Delete',command=remove_property,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
+    (delete_button:=Button(search_property,text='Delete',command=remove_property,state=DISABLED)).grid(row=0,column=1,sticky='NW')
     Label(search_property,text='Location :').grid(row=1,column=0,sticky='E')
     (location_entry:=Entry(search_property)).grid(row=1,column=1,sticky='NSEW')
     Label(search_property,text='Type :').grid(row=2,column=0,sticky='E')
@@ -210,20 +210,155 @@ def main_app(database):
     Label(new_client,text='Email :').grid(row=3,column=0,sticky='E')
     (email_entry_client:=Entry(new_client)).grid(row=3,column=1,sticky='W')
     Button(new_client,text='Add',command=add_client).grid(row=4,columnspan=2,sticky='NSEW')
-    #client tab
-    #new client
+    #agent tab
+    def add_agent():
+        err_label_agent.configure(bootstyle=WARNING)
+        if name_entry_agent.get()=='':err_label_agent.configure(text='No name entered')
+        elif phone_entry_agent.get()=='':err_label_agent.configure(text='No phone number entered')
+        elif email_entry_agent.get()=='':err_label_agent.configure(text='Not email entered')
+        else:
+            database.cursor.execute(
+                "insert into Agents (name,phone,email) values (%s,%s,%s);",
+                (name_entry_agent.get(),phone_entry_agent.get(),email_entry_agent.get())
+            )
+            name_entry_agent.delete(0,END)
+            phone_entry_agent.delete(0,END)
+            email_entry_agent.delete(0,END)
+            database.commt()
+            err_label_agent.configure(text='Agent registered',bootstyle=INFO)
+    def remove_agent():
+        cusor=database.cursor()
+        cursor.execute("delete from Agents where property_id=%s",agent)
+        agent_view.delete(agent)
+        agent=None
+        delete_agent_button.configure(state=DISABLED,bootstyle=DISABLED)
+    def select_agent():
+        global agent
+        selected=agent_view.selection()
+        item=agent_view.identify_row(event.y)
+        if item not in selected:
+            agent=item
+            agent_view.selection_remove(*selected)
+            agent_view.selection_add(item)
+            delete_agent_button.configure(state=NORMAL,bootstyle=OUTLINE)
+        else:
+            agent=None
+            agent_view.selection_remove(item)
+            delete_agent_button.configure(state=DISABLED,bootstyle=DISABLED)
+        return 'break'
+    def agent_back():
+        new_agent.pack_forget()
+        see_agents.pack(expand=True,fill='both')
+        query_agent(None)
+    def go_new_agent():
+        see_agents.pack_forget()
+        new_agent.pack(expand=True,fill='both')
+    def query_agent(_):
+        searched=agent_entry.get()
+        cursor=database.cursor()
+        agent_view.delete(*agent_view.get_children())
+        cursor.execute(f'select * from Agents where name like "%{searched}%" or phone like "%{searched}%" or email like "%{searched}%";')
+        for agent_id,name,phone,email in cursor.fetchall():
+            agent_view.insert("",END,iid=agent_id,values=(name,phone,email))
+    #agent tab
+    (see_agents:=Frame(agent_tab)).pack(expand=True,fill='both')
+    see_agents.rowconfigure(2,weight=3)
+    see_agents.columnconfigure(1,weight=4)
+    Button(see_agents,text='New',command=go_new_agent,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (delete_agent_button:=Button(see_agents,text='Delete',command=remove_agent,state=DISABLED,bootstyle=DISABLED)).grid(row=0,column=1,sticky='NW')
+    Label(see_agents,text='Search :').grid(row=1,column=0,sticky='E')
+    (agent_entry:=Entry(see_agents)).grid(row=1,column=1,sticky='NSEW')
+    agent_entry.bind('<KeyRelease>',query_agent)
+    (agent_scroll:=Scrollbar(see_agents,bootstyle=INFO)).grid(row=2,column=2,sticky='NSEW')
+    (agent_view:=Treeview(see_agents,column=('c1','c2','c3'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=agent_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
+    agent_view.column('0',anchor='e')
+    agent_view.heading('0',text='Name')
+    agent_view.column('1',anchor='w')
+    agent_view.heading('1',text='Phone')
+    agent_view.column('2',anchor='w')
+    agent_view.heading('2',text='Email')
+    agent_scroll.configure(command=agent_view.yview)
+    agent_view.bind('<Button-1>',select_agent)
+    query_agent(None)
+    #new agent
+    new_agent=Frame(agent_tab)
+    Button(new_agent,text='<-',command=agent_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (err_label_agent:=Label(new_agent,text='',bootstyle=DANGER)).grid(row=0,column=1,sticky='NSEW')
+    Label(new_agent,text='Name :').grid(row=1,column=0,sticky='E')
+    (name_entry_agent:=Entry(new_agent)).grid(row=1,column=1,sticky='W')
+    Label(new_agent,text='Phone :').grid(row=2,column=0,sticky='E')
+    (phone_entry_agent:=Entry(new_agent)).grid(row=2,column=1,sticky='W')
+    Label(new_agent,text='Email :').grid(row=3,column=0,sticky='E')
+    (email_entry_agent:=Entry(new_agent)).grid(row=3,column=1,sticky='W')
+    Button(new_agent,text='Add',command=add_agent).grid(row=4,columnspan=2,sticky='NSEW')
     #transaction rab
     def sell():
-        pass
+        global agent
+        for tab in range(3):tabs.tab(tab,state=DISABLED)
+        cursor=database.cursor()
+        if client and property_:
+            cursor.execute(f'select address,price,agent_id,sold from Properties where property_id={property_}')
+            address,amount,agent,sold=cursor.fetchall()[0]
+            cursor.execute(f'select name from Agents where agent_id={agent}')
+            agent_name=cursor.fetchall()[0][0]
+            cursor.execute(f'select name from Clients where client_id={client}')
+            client_name=cursor.fetchall()[0][0]
+            confirm_transaction.configure(state=DISABLED)
+            transaction_display.configure(bootstyle=NORMAL,text=f'''
+Amount : ₹{amount} only
+From : {client_name}
+[Id: {client}]
+To : {agent_name}
+[Id: {agent}]
+Property : {'NA' if sold else address}
+[Id: {property_}]
+            ''')
+        elif property_:
+            cursor.execute(f'select address,price,agent_id from Properties where property_id={property_}')
+            address,amount,agent=cursor.fetchall()[0]
+            cursor.execute(f'select name from Agents where agent_id={agent}')
+            agent_name=cursor.fetchall()[0][0]
+            confirm_transaction.configure(state=DISABLED)
+            transaction_display.configure(bootstyle=WARNING,text=f'''
+Amount : ₹{amount} only
+From : *
+[Id: to be selected]
+To : to be selected
+[Id: {agent}]
+Property : {address}
+[Id: {property_}]
+            ''');
+        elif client:
+            cursor.execute(f'select name from Clients where client_id={client}')
+            client_name=cursor.fetchall()[0][0]
+            confirm_transaction.configure(state=DISABLED)
+            transaction_display.configure(bootstyle=WARNING,text=f'''
+Amount : to be selected
+From : {client_name}
+[Id: {client}]
+To : to be selected
+[Id: to be selected]
+Property : *
+[Id: to ne selected]
+            ''')
+        else:
+            confirm_transaction.configure(state=DISABLED)
+            transaction_display.configure(bootstyle=WARNING,text=f'Property and Client not selected')
+        see_transactions.pack_forget()
+        new_transaction.pack(expand=True,fill='both')
     def transaction_back():
-        pass
+        new_transaction.pack_forget()
+        see_transactions.pack(expand=True,fill='both')
+        for tab in range(4):tabs.tab(tab,state=NORMAL)
     def query_transaction(_):
         searched=transactions_entry.get()
         cursor=database.cursor()
         transaction_view.delete(*transaction_view.get_children())
-        cursor.execute(f'select transaction_id,Clients.name,Agents.name,Properties.address,price from Transactions join Clients on Clients.client_id=Transactions.buyer_id join Properties on Properties.property_id=Transactions.property_id join Agents on Properties.agent_id=Agents.agent_id where Clients.name like "%{searched}%" or Agents.name like "%{searched}%" or Properties.address like "%{searched}%" order by transaction_id;')
-        for transaction_id,agent_name,client_name,address,amount in cursor.fetchall():
-            transaction_view.insert("",END,iid=transaction_id,values=(transaction_id,agent_name,client_name,address,amount))
+        cursor.execute(f'select transaction_id,Clients.name,Agents.name,Properties.address,price,transaction_date from Transactions join Clients on Clients.client_id=Transactions.buyer_id join Properties on Properties.property_id=Transactions.property_id join Agents on Properties.agent_id=Agents.agent_id where Clients.name like "%{searched}%" or Agents.name like "%{searched}%" or Properties.address like "%{searched}%" order by transaction_id;')
+        for transaction_id,agent_name,client_name,address,amount,transaction_date in cursor.fetchall():
+            transaction_view.insert("",END,iid=transaction_id,values=(transaction_id,agent_name,client_name,address,amount,transaction_date))
+    def perform_transaction():
+        pass
     (see_transactions:=Frame(transaction_tab)).pack(expand=True,fill='both')
     see_transactions.rowconfigure(2,weight=3)
     see_transactions.columnconfigure(1,weight=4)
@@ -232,7 +367,7 @@ def main_app(database):
     (transactions_entry:=Entry(see_transactions)).grid(row=1,column=1,sticky='NSEW')
     transactions_entry.bind('<KeyRelease>',query_transaction)
     (transaction_scroll:=Scrollbar(see_transactions,bootstyle=INFO)).grid(row=2,column=2,sticky='NSEW')
-    (transaction_view:=Treeview(see_transactions,column=('c1','c2','c3','c4','c5'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=transaction_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
+    (transaction_view:=Treeview(see_transactions,column=('c1','c2','c3','c4','c5','c6'),show='headings',selectmode='browse',bootstyle=INFO,xscrollcommand=transaction_scroll.set)).grid(row=2,column=0,columnspan=2,sticky='NSEW')
     transaction_view.column('0',anchor='e')
     transaction_view.heading('0',text='Id')
     transaction_view.column('1',anchor='w')
@@ -243,10 +378,16 @@ def main_app(database):
     transaction_view.heading('3',text='For')
     transaction_view.column('4',anchor='w')
     transaction_view.heading('4',text='Amount')
+    transaction_view.column('5',anchor='w')
+    transaction_view.heading('5',text='Date')
     transaction_scroll.configure(command=transaction_view.yview)
     transaction_view.bind('<Button-1>',select_client)
     query_transaction(None)
     #new transaction
+    (new_transaction:=Frame(transaction_tab))
+    Button(new_transaction,text='<-',command=transaction_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
+    (transaction_display:=Label(new_transaction)).grid(column=1,row=1)
+    (confirm_transaction:=Button(new_transaction,text='Confirm',command=perform_transaction)).grid(column=0,row=2)
 #Login window
 def login(*_):
     try:
