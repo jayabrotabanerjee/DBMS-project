@@ -5,6 +5,7 @@ from RangeSlider.RangeSlider import RangeSliderH
 from mysql.connector import connect
 from mysql.connector.errors import DatabaseError,ProgrammingError
 from re import compile
+from itertools import chain
 valid_float=compile(r'^[0-9]+(\.[0-9]*)?$')
 app=Window(title='Login',resizable=(False,False))
 #selections
@@ -19,6 +20,13 @@ def main_app(database):
     tabs.add(client_tab:=Frame(tabs),text='Clients')
     tabs.add(agent_tab:=Frame(tabs),text='Agents')
     tabs.add(transaction_tab:=Frame(tabs),text='Transactions')
+    def tab_changed(event):#https://stackoverflow.com/questions/72993413/how-to-create-tkinter-tab-frame-with-different-dynamic-heights
+        tab = tabs.nametowidget(tabs.select())
+        tabs.configure(
+            height=tab.winfo_reqheight(),
+            width=tab.winfo_reqwidth()
+        )
+    tabs.bind('<<NotebookTabChanged>>',tab_changed)
     #property tab
     def query():
         cursor=database.cursor()
