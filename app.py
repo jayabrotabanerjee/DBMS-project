@@ -159,7 +159,7 @@ def main_app(database):
         elif phone_entry_client.get()=='':err_label_client.configure(text='No phone number entered')
         elif email_entry_client.get()=='':err_label_client.configure(text='Not email entered')
         else:
-            database.cursor.execute(
+            database.cursor().execute(
                 "insert into Clients (name,phone,email) values (%s,%s,%s);",
                 (name_entry_client.get(),phone_entry_client.get(),email_entry_client.get())
             )
@@ -225,7 +225,7 @@ def main_app(database):
         elif phone_entry_agent.get()=='':err_label_agent.configure(text='No phone number entered')
         elif email_entry_agent.get()=='':err_label_agent.configure(text='Not email entered')
         else:
-            database.cursor.execute(
+            database.cursor().execute(
                 "insert into Agents (name,phone,email) values (%s,%s,%s);",
                 (name_entry_agent.get(),phone_entry_agent.get(),email_entry_agent.get())
             )
@@ -396,6 +396,7 @@ Property : *
     Button(new_transaction,text='<-',command=transaction_back,bootstyle=OUTLINE).grid(row=0,column=0,sticky='NW')
     (transaction_display:=Label(new_transaction)).grid(column=1,row=1)
     (confirm_transaction:=Button(new_transaction,text='Confirm',command=perform_transaction)).grid(column=0,row=2)
+    #select first tab
 #Login window
 def login(*_):
     try:
