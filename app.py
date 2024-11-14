@@ -166,7 +166,7 @@ def main_app(database):
             name_entry_client.delete(0,END)
             phone_entry_client.delete(0,END)
             email_entry_client.delete(0,END)
-            database.commt()
+            database.commit()
             err_label_client.configure(text='Client registered',bootstyle=INFO)
     def remove_client():
         cusor=database.cursor()
@@ -232,7 +232,7 @@ def main_app(database):
             name_entry_agent.delete(0,END)
             phone_entry_agent.delete(0,END)
             email_entry_agent.delete(0,END)
-            database.commt()
+            database.commit()
             err_label_agent.configure(text='Agent registered',bootstyle=INFO)
     def remove_agent():
         cusor=database.cursor()
