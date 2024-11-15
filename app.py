@@ -6,6 +6,7 @@ from mysql.connector import connect
 from mysql.connector.errors import DatabaseError,ProgrammingError
 from re import compile
 from itertools import chain
+from datetime import datetime
 valid_float=compile(r'^[0-9]+(\.[0-9]*)?$')
 app=Window(title='Login',resizable=(False,False))
 #selections
@@ -240,7 +241,7 @@ def main_app(database):
         agent_view.delete(agent)
         agent=None
         delete_agent_button.configure(state=DISABLED,bootstyle=DISABLED)
-    def select_agent():
+    def select_agent(event):
         global agent
         selected=agent_view.selection()
         item=agent_view.identify_row(event.y)
