@@ -236,7 +236,7 @@ def main_app(database):
             database.commit()
             err_label_agent.configure(text='Agent registered',bootstyle=INFO)
     def remove_agent():
-        cusor=database.cursor()
+        cursor=database.cursor()
         cursor.execute("delete from Agents where property_id=%s",agent)
         agent_view.delete(agent)
         agent=None
