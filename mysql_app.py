@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import (
 # Database connection configuration
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'jayabrota',
-    'password': 'thrillfly@49987225',
+    'user': 'username', # replace with your username
+    'password': 'password', # replace with your password
     'database': 'RealEstateDB'
 }
 
