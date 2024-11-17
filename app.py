@@ -56,7 +56,7 @@ def main_app(database):
         search_property.pack_forget()
         new_property.pack(expand=True,fill='both')
     def remove_property():
-        cusor=database.cursor()
+        cursor=database.cursor()
         cursor.execute("delete from Properties where property_id=%s",property_)
         result_view.delete(property_)
         property_=None
@@ -170,7 +170,7 @@ def main_app(database):
             database.commit()
             err_label_client.configure(text='Client registered',bootstyle=INFO)
     def remove_client():
-        cusor=database.cursor()
+        cursor=database.cursor()
         cursor.execute("delete from Clients where property_id=%s",client)
         client_view.delete(client)
         client=None
