@@ -56,8 +56,9 @@ def main_app(database):
         search_property.pack_forget()
         new_property.pack(expand=True,fill='both')
     def remove_property():
+        global property_
         cursor=database.cursor()
-        cursor.execute("delete from Properties where property_id=%s",property_)
+        cursor.execute(f'delete from Properties where property_id={property_}')
         result_view.delete(property_)
         property_=None
         delete_button.configure(state=DISABLED,bootstyle=DISABLED)
@@ -170,8 +171,9 @@ def main_app(database):
             database.commit()
             err_label_client.configure(text='Client registered',bootstyle=INFO)
     def remove_client():
+        global client
         cursor=database.cursor()
-        cursor.execute("delete from Clients where property_id=%s",client)
+        cursor.execute(f'delete from Clients where client_id={client}')
         client_view.delete(client)
         client=None
         delete_client_button.configure(state=DISABLED,bootstyle=DISABLED)
@@ -236,8 +238,9 @@ def main_app(database):
             database.commit()
             err_label_agent.configure(text='Agent registered',bootstyle=INFO)
     def remove_agent():
+        global agent
         cursor=database.cursor()
-        cursor.execute("delete from Agents where property_id=%s",agent)
+        cursor.execute(f'delete from Agents where agent_id={agent}')
         agent_view.delete(agent)
         agent=None
         delete_agent_button.configure(state=DISABLED,bootstyle=DISABLED)
