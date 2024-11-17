@@ -16,6 +16,6 @@
 - **Additional Screenshots**: [View Screenshots](https://drive.google.com/drive/folders/124Y2u6uUFKQxsfbx2nwti7cma-RrwRgf?usp=drive_link)
 
 ### Points to Note:
-1. **run app.py .** 
+1. **run `app.py`.** 
 2. **Use your username and the password given in your Database Config file (refer to `mysql.py`).**
 3. **Update the schema as shown here: [Schema Update Instructions](https://drive.google.com/file/d/1bSUzMYO3A_xajx8NJ_VZKeUnd_is0BGb/view?usp=drive_link) after every new creation or deletion.**
